@@ -16,8 +16,8 @@ class UserSeeder extends Seeder
     {
 
         User::firstOrCreate([
-            'name'        => 'ilandbz',
-            'email'       => 'ilandbz@gmail.com',
+            'name'        => 'administrador',
+            'email'       => 'administrador@gmail.com',
             'nombres'     => 'Cristian Wilmer',
             'apellidos'   => 'Figueroa Ferrer',
             'password'    => Hash::make('123456789'),
@@ -26,8 +26,8 @@ class UserSeeder extends Seeder
             'foto'        => 'default.png',
         ]);
         User::firstOrCreate([
-            'name'        => 'ilandbz',
-            'email'       => 'ilandbz@gmail.com',
+            'name'        => 'maestro',
+            'email'       => 'maestro@gmail.com',
             'nombres'     => 'Cristian Wilmer',
             'apellidos'   => 'Figueroa Ferrer',
             'password'    => Hash::make('123456789'),
@@ -36,8 +36,8 @@ class UserSeeder extends Seeder
             'foto'        => 'default.png',
         ]);
         User::firstOrCreate([
-            'name'        => 'ilandbz',
-            'email'       => 'ilandbz@gmail.com',
+            'name'        => 'alumno',
+            'email'       => 'alumno@gmail.com',
             'nombres'     => 'Cristian Wilmer',
             'apellidos'   => 'Figueroa Ferrer',
             'password'    => Hash::make('123456789'),

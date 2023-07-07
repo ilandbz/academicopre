@@ -47,9 +47,11 @@
 <script src="plugins/toastr/toastr.min.js"></script>
 <script>
   let csrf_token = $('meta[name="csrf-token"]').attr('content');
-    document.getElementById('nuevodocente').addEventListener('submit', function (event) {
+
+
+    document.getElementById('docenteform').addEventListener('submit', function (event) {
         event.preventDefault(); // Evita que el formulario se envíe normalmente
-        var form = document.getElementById('nuevodocente');
+        var form = document.getElementById('docenteform');
         $.ajax({
             type:'POST',
             // datatype: 'json',
@@ -58,13 +60,11 @@
             processData: false,
             contentType: false,
             success: function(data) {
-              
               form.reset();
-              $("#modalnuevodocente").modal('hide');
-              $("#tabladocentes-body").empty();
-              carga_inicial();
-              // window.location.href="docentes"
-              // toastr.success(data.mensaje)
+              $("#modaldocente").modal('hide');
+              cargar_datatable();
+              toastr.success(data.mensaje)
+              $('.alert-danger').remove();
             },
             error: function(xhr) {
               let res = xhr.responseJSON
@@ -78,80 +78,124 @@
           }
         });
     });
+
     carga_inicial();
     function carga_inicial(){ 
-      //$("#example1 > tbody").empty();
+      $("#tabladocentes").DataTable({
+        "responsive": true, "lengthChange": false, "autoWidth": false,
+        "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        }).buttons().container().appendTo('#tabladocentes_wrapper .col-md-6:eq(0)');
+      cargar_datatable();
+    }
+    function cargar_datatable(){
+      var table = $('#tabladocentes').DataTable();
+      table.clear();
       $.ajax({
           dataType:'json',
-          url: 'docentes/todos',
+          url: 'docentes-todos',
           success: function(data) {
-              let numero_orden = 1;
+            let numero_orden = 1;
               (data.docentes).forEach(function(repo) {
-                  agregarFila(numero_orden,repo)
+                  table.row.add([
+                  numero_orden,
+                  repo.dni,
+                  repo.nombres,
+                  repo.apellidos,
+                  repo.sexo,
+                  repo.tipocontrato,
+                  '<div class="btn-group" role="group" aria-label="Basic mixed styles example"><a id="'+repo.id+'" class="btn btn-danger btn_eliminar_docente mr-1"><i class="fa fa-trash" aria-hidden="true"></i></a><a id="'+repo.id+'" class="btn btn-warning btn_modificar_docente"><i class="fa fa-pencil" aria-hidden="true"></i></a></div>'
+                ]).draw();
                   numero_orden++;
               });
           }
       })
-    } 
-    function agregarFila(numero_orden, tabla){      
-      var fila = '<tr>';
-      fila += '<td>'+numero_orden+'</td>';
-      fila += '<td>'+tabla.dni +'</td>';        
-      fila += '<td>'+tabla.nombres+'</td>'; 
-      fila += '<td>'+tabla.apellidos+'</td>'; 
-      fila += '<td>'+tabla.sexo+'</td>';         
-      fila += '<td>'+tabla.tipocontrato+'</td>';         
-      fila += '<td>';
-
-      fila += '</td>';
-      fila += '</tr>';
-      $("#tabladocentes").append(fila);    
     }
-      $("#tabladocentes").on('click', '.btn_eliminar_docente', function() {            
-          var docente_id = $(this).attr('id'); 
-          console.log(docente_id);          
-          Swal.fire({
-            icon: 'question',
-            title: 'Docente',
-            text: 'Esta Seguro de Eliminar el docente?',
-            toast: true,
-            position: 'center',
-            showConfirmButton: true,
-            confirmButtonText: 'Si',
-            showCancelButton: true,
-            cancelButtonText: 'No',
-            cancelButtonColor: '#bd2130'
-          }).then(respuesta=>{
-            if(respuesta.isConfirmed){
-              $.ajax({
-                  type:'POST',
-                  dataType:'json',
+    $("#tabladocentes").on('click', '.btn_eliminar_docente', function() {            
+        var docente_id = $(this).attr('id');       
+        Swal.fire({
+          icon: 'question',
+          title: 'Docente',
+          text: 'Esta Seguro de Eliminar el docente?',
+          toast: true,
+          position: 'center',
+          showConfirmButton: true,
+          confirmButtonText: 'Si',
+          showCancelButton: true,
+          cancelButtonText: 'No',
+          cancelButtonColor: '#bd2130'
+        }).then(respuesta=>{
+          if(respuesta.isConfirmed){
+            $.ajax({
+                type:'POST',
+                dataType:'json',
+                url: 'docentes-eliminar',
+                data: {
+                  id: docente_id,
+                  _token: csrf_token
+                },
+                success: function(data) {
+                    if(data.ok==1)
+                    {
+                      toastr.success(data.mensaje)
+                      cargar_datatable();
+                    }
+                }
+            })
+            
+          }
+        });
+    });
 
-                  url: 'docentes-eliminar',
-                  data: {
-                    id: docente_id,
-                    _token: csrf_token
-                  },
-                  success: function(data) {
-                      if(data.ok==1)
-                      {
-                        toastr.success(data.mensaje)
-                        //($("#tabladocentes > tbody").empty();
-                        //carga_inicial();
-                        //window.location.href="docentes"
-                    
-                      }
-                  }
-              })
-              
-            }
-          });
-      });
-$(function () {
-  $("#tabladocentes").DataTable({
-    "responsive": true, "lengthChange": false, "autoWidth": false,
-    "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-  }).buttons().container().appendTo('#tabladocentes_wrapper .col-md-6:eq(0)');
+function limpiarformdocente(){
+  $('input[name=id]').val('');
+  $('input[name=nombres]').val('')
+  $('input[name=apellidos]').val('')
+  $('select[name=sexo]').val('M')
+  $('input[name=dni]').val('')
+  $('input[name=email]').val('')  
+  $('select[name=tipocontrato]').val('Contratado')  
+}
+
+$('#btn-nuevo-docente').click(function (){
+  limpiarformdocente();
+  document.getElementById('grupocontrasenha').classList.remove('d-none');
+  $("#titulo-modal").text('Nuevo Docente');
+  $("#modaldocente").modal('show');
+});
+
+$("#tabladocentes").on('click', '.btn_modificar_docente', function() { 
+  $('.alert-danger').remove();
+  $("#titulo-modal").text('Modificar Docente');
+  document.getElementById('grupocontrasenha').classList.add('d-none');
+  var docente_id = $(this).attr('id'); 
+  $.ajax({
+    url: 'docente-obtener',
+    method: 'GET', // o GET, PUT, DELETE, según tus necesidades
+    data: {id : docente_id},
+    dataType: 'json', // o 'text', 'html', según el tipo de respuesta esperada
+    success: function(respuesta) {
+      $('input[name=id]').val(respuesta.id)
+      $('input[name=nombres]').val(respuesta.nombres)
+      $('input[name=apellidos]').val(respuesta.apellidos)
+      $('select[name=sexo]').val(respuesta.sexo)
+      $('input[name=email]').val(respuesta.email)
+      $('input[name=dni]').val(respuesta.dni)
+      $('select[name=tipocontrato]').val(respuesta.tipocontrato)
+    },
+    error: function(xhr, status, error) {
+      var mensajeError = "Ocurrió un error en la solicitud AJAX.";
+    
+    // Obtener información detallada del error
+    var mensajeDetallado = "Error: " + error + ", Estado: " + status + ", Descripción: " + xhr.statusText;
+
+    // Mostrar mensaje de error en algún elemento HTML
+    $('#mensaje-error').text(mensajeError);
+    
+    // Mostrar mensaje detallado en la consola
+    console.log(mensajeDetallado);
+    }
+  })
+  $("#modaldocente").modal('show');
 });
 </script>
 @endsection

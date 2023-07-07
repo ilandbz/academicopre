@@ -174,33 +174,12 @@
           </ul>
         </li>
         <li class="nav-item">
-          <a href="#" class="nav-link {{ request()->is('docentes') ? 'active' : '' }}">
+          <a href="docentes" class="nav-link {{ request()->is('docentes') ? 'active' : '' }}">
             <i class="fas fa-chalkboard-teacher"></i>
             <p>
               Docente
-              <i class="fas fa-angle-left right"></i>
             </p>
           </a>
-          <ul class="nav nav-treeview">
-            <li class="nav-item">
-              <a href="docentes" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Buscar</p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="pages/forms/advanced.html" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Nuevo</p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="pages/forms/editors.html" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Asignacion de Cursos</p>
-              </a>
-            </li>
-          </ul>
         </li>
         <li class="nav-item">
           <a href="#" class="nav-link">

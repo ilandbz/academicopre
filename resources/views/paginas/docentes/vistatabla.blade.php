@@ -10,7 +10,7 @@
         <th>Acciones</th>
       </tr>
     </thead>
-    <tbody id="tabladocentes-body">
+    {{-- <tbody id="tabladocentes-body">
         @foreach ($docentes as $item)
         <tr>
           <td>{{ $loop->iteration }}</td>
@@ -27,7 +27,7 @@
           </td>
         </tr>                    
         @endforeach
-    </tbody>
+    </tbody> --}}
     <tfoot>
       <tr>
         <th>NRO</th>
