@@ -14,7 +14,12 @@ class DocenteController extends Controller
     public function index()
     {
         $data['content'] = 'paginas.docentes.inicio';
+        $data['docentes'] = Docente::get();
         return view('paginas.docentes.index', $data);
+    }
+    public function cargarvistatabla(){
+        $data['docentes'] = Docente::get();
+        return view('paginas.docentes.vistatabla', $data);
     }
 
     public function lista(){
@@ -77,8 +82,13 @@ class DocenteController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request)
     {
-        //
+        $docente = Docente::where('id',$request->id)->first();
+        $docente->delete();
+        return response()->json([
+            'ok' => 1,
+            'mensaje' => 'Registro de Docente Eliminado'
+        ]);
     }
 }

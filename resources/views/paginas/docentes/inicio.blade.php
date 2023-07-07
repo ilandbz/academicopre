@@ -47,40 +47,12 @@
                   </div>
               </div>
             <br>
-            <table id="example1" class="table table-bordered table-striped">
-              <thead>
-                <tr>
-                  <th>NRO</th>
-                  <th>DNI</th>
-                  <th>Nombres</th>
-                  <th>Apellidos</th>
-                  <th>Sexo</th>
-                  <th>Tipo de Contrato</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                </tr>
-              </tbody>
-              <tfoot>
-                <tr>
-                  <th>NRO</th>
-                  <th>DNI</th>
-                  <th>Nombres</th>
-                  <th>Apellidos</th>
-                  <th>Sexo</th>
-                  <th>Tipo de Contrato</th>
-                  <th>Acciones</th>
-                </tr>
-              </tfoot>
-            </table>
+            <div id="vtabladocentes">
+              @include('paginas.docentes.vistatabla')
+            </div>
           </div>
           <!-- /.card-body -->
         </div>
-
-
-
       </div>
       <!-- /.col -->
     </div>

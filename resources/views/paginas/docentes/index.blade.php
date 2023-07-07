@@ -1,11 +1,11 @@
 @extends('layout')
 @section('estilos')
-
   <!-- DataTables -->
   <link rel="stylesheet" href="plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
   <link rel="stylesheet" href="plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
   <link rel="stylesheet" href="plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
-<link rel="stylesheet" href="plugins/toastr/toastr.min.css">
+  <link rel="stylesheet" href="plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+  <link rel="stylesheet" href="plugins/toastr/toastr.min.css">
 @endsection
 
 @section('preloader')
@@ -45,85 +45,115 @@
 <script src="plugins/sweetalert2/sweetalert2.min.js"></script>
 <!-- Toastr -->
 <script src="plugins/toastr/toastr.min.js"></script>
+<script>
+  let csrf_token = $('meta[name="csrf-token"]').attr('content');
+    document.getElementById('nuevodocente').addEventListener('submit', function (event) {
+        event.preventDefault(); // Evita que el formulario se envíe normalmente
+        var form = document.getElementById('nuevodocente');
+        $.ajax({
+            type:'POST',
+            // datatype: 'json',
+            url: this.action,
+            data: new FormData(this),
+            processData: false,
+            contentType: false,
+            success: function(data) {
+              
+              form.reset();
+              $("#modalnuevodocente").modal('hide');
+              $("#tabladocentes-body").empty();
+              carga_inicial();
+              // window.location.href="docentes"
+              // toastr.success(data.mensaje)
+            },
+            error: function(xhr) {
+              let res = xhr.responseJSON
+              if($.isEmptyObject(res) === false) {
+                  $.each(res.errors,function (key, value){
+                      $("input[name='"+key+"']").closest('.form-group')
+                      .append('<div class="alert alert-danger" role="alert">'+ value+ '</div>')
+                  });
+              }
 
-  <script>
-      document.getElementById('nuevodocente').addEventListener('submit', function (event) {
-          event.preventDefault(); // Evita que el formulario se envíe normalmente
-          var form = document.getElementById('nuevodocente');
-          
-          $.ajax({
-              type:'POST',
-              // datatype: 'json',
-              url: this.action,
-              data: new FormData(this),
-              processData: false,
-              contentType: false,
-              success: function(data) {
-                form.reset();
-                $("#modalnuevodocente").modal('hide');
-                toastr.success(data.mensaje)
-              },
-              error: function(xhr) {
-                let res = xhr.responseJSON
-                if($.isEmptyObject(res) === false) {
-                    $.each(res.errors,function (key, value){
-                        $("input[name='"+key+"']").closest('.form-group')
-                        .append('<div class="alert alert-danger" role="alert">'+ value+ '</div>')
-                    });
-                }
+          }
+        });
+    });
+    carga_inicial();
+    function carga_inicial(){ 
+      //$("#example1 > tbody").empty();
+      $.ajax({
+          dataType:'json',
+          url: 'docentes/todos',
+          success: function(data) {
+              let numero_orden = 1;
+              (data.docentes).forEach(function(repo) {
+                  agregarFila(numero_orden,repo)
+                  numero_orden++;
+              });
+          }
+      })
+    } 
+    function agregarFila(numero_orden, tabla){      
+      var fila = '<tr>';
+      fila += '<td>'+numero_orden+'</td>';
+      fila += '<td>'+tabla.dni +'</td>';        
+      fila += '<td>'+tabla.nombres+'</td>'; 
+      fila += '<td>'+tabla.apellidos+'</td>'; 
+      fila += '<td>'+tabla.sexo+'</td>';         
+      fila += '<td>'+tabla.tipocontrato+'</td>';         
+      fila += '<td>';
 
+      fila += '</td>';
+      fila += '</tr>';
+      $("#tabladocentes").append(fila);    
+    }
+      $("#tabladocentes").on('click', '.btn_eliminar_docente', function() {            
+          var docente_id = $(this).attr('id'); 
+          console.log(docente_id);          
+          Swal.fire({
+            icon: 'question',
+            title: 'Docente',
+            text: 'Esta Seguro de Eliminar el docente?',
+            toast: true,
+            position: 'center',
+            showConfirmButton: true,
+            confirmButtonText: 'Si',
+            showCancelButton: true,
+            cancelButtonText: 'No',
+            cancelButtonColor: '#bd2130'
+          }).then(respuesta=>{
+            if(respuesta.isConfirmed){
+              $.ajax({
+                  type:'POST',
+                  dataType:'json',
+
+                  url: 'docentes-eliminar',
+                  data: {
+                    id: docente_id,
+                    _token: csrf_token
+                  },
+                  success: function(data) {
+                      if(data.ok==1)
+                      {
+                        toastr.success(data.mensaje)
+                        //($("#tabladocentes > tbody").empty();
+                        //carga_inicial();
+                        //window.location.href="docentes"
+                    
+                      }
+                  }
+              })
+              
             }
           });
       });
-      carga_inicial();
-      function carga_inicial(){ 
-        //$("#example1 > tbody").remove();
-        $.ajax({
-            dataType:'json',
-            url: 'docentes/todos',
-            success: function(data) {
-                let numero_orden = 1;
-                (data.docentes).forEach(function(repo) {
-                    console.log(repo);
-                    agregarFila(numero_orden,repo)
-                    numero_orden++;
-                });
-            }
-        })
-      } 
-      function agregarFila(numero_orden, tabla){      
-        var fila = '<tr>';
-        fila += '<td>'+numero_orden+'</td>';
-        fila += '<td>'+tabla.dni +'</td>';        
-        fila += '<td>'+tabla.nombres+'</td>'; 
-        fila += '<td>'+tabla.apellidos+'</td>'; 
-        fila += '<td>'+tabla.sexo+'</td>';         
-        fila += '<td>'+tabla.tipocontrato+'</td>';         
-        fila += '<td>';
-        fila += '<div class="btn-group" role="group" aria-label="Basic mixed styles example">';
-        fila += '<button type="button" class="btn btn-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>';
-        fila += '<button type="button" class="btn btn-warning"><i class="fa fa-pencil" aria-hidden="true"></i></button>';
-        fila += '</div>';
-        fila += '</td>';
-               
-        fila += '</tr>';
-        $("#example1").append(fila);    
-      }
-
-  $(function () {
-    $("#example1").DataTable({
-      "responsive": true, "lengthChange": false, "autoWidth": false,
-      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-
-
-
-    
-  });
-
-
-  </script>
-
+$(function () {
+  $("#tabladocentes").DataTable({
+    "responsive": true, "lengthChange": false, "autoWidth": false,
+    "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+  }).buttons().container().appendTo('#tabladocentes_wrapper .col-md-6:eq(0)');
+});
+</script>
 @endsection
 
 

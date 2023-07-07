@@ -25,5 +25,27 @@ class UserSeeder extends Seeder
             'role_id'     => Role::where('nombre', 'Administrador')->value('id'),
             'foto'        => 'default.png',
         ]);
+        User::firstOrCreate([
+            'name'        => 'ilandbz',
+            'email'       => 'ilandbz@gmail.com',
+            'nombres'     => 'Cristian Wilmer',
+            'apellidos'   => 'Figueroa Ferrer',
+            'password'    => Hash::make('123456789'),
+            'sexo'        => 'M',
+            'role_id'     => Role::where('nombre', 'Maestro')->value('id'),
+            'foto'        => 'default.png',
+        ]);
+        User::firstOrCreate([
+            'name'        => 'ilandbz',
+            'email'       => 'ilandbz@gmail.com',
+            'nombres'     => 'Cristian Wilmer',
+            'apellidos'   => 'Figueroa Ferrer',
+            'password'    => Hash::make('123456789'),
+            'sexo'        => 'M',
+            'role_id'     => Role::where('nombre', 'Alumno')->value('id'),
+            'foto'        => 'default.png',
+        ]);
+
+
     }
 }

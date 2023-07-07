@@ -34,9 +34,13 @@ Route::post('login', [LoginController::class, 'autenticar'])->name('acceder');
 Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::get('usuarios', [UsuarioController::class, 'index'])->name('usuarios');
-Route::get('docentes', [DocenteController::class, 'index'])->name('docentes');
 
+
+Route::get('docentes', [DocenteController::class, 'index'])->name('docentes');
 Route::get('docentes/todos', [DocenteController::class, 'lista'])->name('docentes.todos');
+Route::post('docentes-eliminar', [DocenteController::class, 'destroy'])->name('docentes.eliminar');
+Route::get('docentes-vista-tabla', [DocenteController::class, 'cargarvistatabla']);
+
 
 Route::post('docentes', [DocenteController::class, 'store'])->name('docentes.store');
 
