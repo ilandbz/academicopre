@@ -21,6 +21,14 @@
           </a>
         </li>
         <li class="nav-item">
+          <a href="personas" class="nav-link {{ request()->is('personas') ? 'active' : '' }}">
+            <i class="nav-icon fas fa-address-book"></i>
+            <p>
+              Personas
+            </p>
+          </a>
+        </li>        
+        <li class="nav-item">
           <a href="#" class="nav-link">
             <i class="nav-icon fas fa-user-graduate"></i>
             <p>

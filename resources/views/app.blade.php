@@ -4,7 +4,6 @@
   <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
   <!-- JQVMap -->
   <link rel="stylesheet" href="plugins/jqvmap/jqvmap.min.css">
-
   <!-- overlayScrollbars -->
   <link rel="stylesheet" href="plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
   <!-- Daterange picker -->
@@ -12,7 +11,6 @@
   <!-- summernote -->
   <link rel="stylesheet" href="plugins/summernote/summernote-bs4.min.css">
 @endsection
-
 @section('preloader')
   <!-- Preloader -->
   <div class="preloader flex-column justify-content-center align-items-center">
@@ -20,10 +18,12 @@
   </div>    
 @endsection
 
-@section('content-wrapper')
-  <div class="content-wrapper">
-    @include('paginas.inicio')
-  </div>
+@section('maincontent')
+  
+
+    
+  @include('paginas.inicio')
+  
   <!-- /.content-wrapper -->
 @endsection
 

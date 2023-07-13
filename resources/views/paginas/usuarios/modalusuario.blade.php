@@ -1,9 +1,9 @@
-<form name="docenteform" id="docenteform" action="docentes" method="POST">
-    <div class="modal fade" id="modaldocente">
+<form name="usuarioform" id="usuarioform" action="usuarios" method="POST">
+    <div class="modal fade" id="modalusuario">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header bg-warning">
-            <h4 class="modal-title tex-dark" id="titulo-modal">Nuevo Docente</h4>
+            <h4 class="modal-title tex-dark" id="titulo-modal">Nuevo Usuario</h4>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -12,8 +12,12 @@
               @csrf
               <div class="card-body">
                 <div class="form-group">
-                  <label for="nombres">Nombres</label>
                   <input type="hidden" name="id" value="">
+                  <label for="dni">DNI</label>
+                  <input type="text" class="form-control" id="dni" name="dni" placeholder="DNI">
+                </div>
+                <div class="form-group">
+                  <label for="nombres">Nombres</label>
                   <input type="text" class="form-control" name="nombres" id="nombres" placeholder="Nombres">
                 </div>
                 <div class="form-group">
@@ -23,11 +27,7 @@
                 <div class="form-group">
                   <label for="apellidom">Apellido Materno</label>
                   <input type="text" class="form-control" id="apellidom" name="apellidom" placeholder="Apellido Paterno">
-                </div>  
-                <div class="form-group">
-                  <label for="dni">DNI</label>
-                  <input type="text" class="form-control" id="dni" name="dni" placeholder="DNI">
-                </div>
+                </div>                              
                 <div class="form-group">
                   <label for="dni">EMAIL</label>
                   <input type="email" class="form-control" id="email" name="email" placeholder="Me@me.com">
@@ -42,19 +42,12 @@
                     <input type="password" class="form-control" id="password_confirmation" name="password_confirmation">
                   </div>
                 </div>
-
                 <div class="form-group">
-                  <label>Sexo</label>
-                  <select class="form-control" name="sexo">
-                    <option value="M">Masculino</option>
-                    <option value="F">Femenino</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label>Tipo de Contrato</label>
-                  <select class="form-control" name="tipocontrato">
-                    <option value="Contratado">Contratado</option>
-                    <option value="Nombrado">Nombrado</option>
+                  <label>Rol</label>
+                  <select class="form-control" name="role_id">
+                    @foreach ($roles as $item)
+                      <option value="{{$item->id}}">{{$item->nombre}}</option>
+                    @endforeach
                   </select>
                 </div>
               </div>

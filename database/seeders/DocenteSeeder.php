@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Docente;
+use App\Models\Persona;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -15,13 +16,8 @@ class DocenteSeeder extends Seeder
     public function run(): void
     {
         Docente::firstOrCreate([
-            'nombres'       => 'docente',
-            'apellidos'     => 'Figueroa Ferrer',
-            'dni'           => '12457863',
-            'email'         => 'docente@gmail.com',
-            'password'      => Hash::make('123456789'),
-            'sexo'          => 'M',
-            'tipocontrato'  => 'Contratado'
+            'tipocontrato'  => 'Contratado',
+            'persona_id'  => Persona::where('email', 'ilandbz@gmail.com')->value('id'),
         ]);
     }
 }

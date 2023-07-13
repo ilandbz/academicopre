@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
   <link rel="stylesheet" href="plugins/toastr/toastr.min.css">
 @endsection
-
 @section('preloader')
   <!-- Preloader -->
   <div class="preloader flex-column justify-content-center align-items-center">
@@ -16,9 +15,47 @@
 @endsection
 
 @section('maincontent')
-  @include('paginas.docentes.inicio')
-@endsection
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Lista General de Usuarios</h3>
+      </div>
+      <!-- /.card-header -->
+      <div class="card-body">
+          @if (session('success'))
+              <div class="alert alert-success">
+                  {{ session('success') }}
+              </div>
+          @endif
+          @if ($errors->any())
+          <div class="alert alert-danger">
+              <ul>
+                  @foreach ($errors->all() as $error)
+                      <li>{{ $error }}</li>
+                  @endforeach
+              </ul>
+          </div>
+          @endif
+          <div class="input-group">
+              <div class="input-group-append pull-right">
+                  <button class="btn btn-lg btn-warning" id="btn-nuevo-usuario">
+                      Nuevo Registro <i class="fas fa-user-plus"></i>
+                  </button>
+              </div>
+          </div>
+        <br>
+        @include('paginas.usuarios.tabla')
+      </div>
+      <!-- /.card-body -->
+    </div>
+  </div>
+  <!-- /.col -->
+</div>
+<!-- /.row -->
 
+@include('paginas.usuarios.modalusuario')
+@endsection
 
 @section('scripts')
 <!-- DataTables  & Plugins -->
@@ -34,8 +71,12 @@
 <script src="plugins/datatables-buttons/js/buttons.html5.min.js"></script>
 <script src="plugins/datatables-buttons/js/buttons.print.min.js"></script>
 <script src="plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
-@endsection
 
+<!-- SweetAlert2 -->
+<script src="plugins/sweetalert2/sweetalert2.min.js"></script>
+<!-- Toastr -->
+<script src="plugins/toastr/toastr.min.js"></script>
+@endsection
 
 @section('script')
 <!-- SweetAlert2 -->
@@ -46,9 +87,10 @@
   let csrf_token = $('meta[name="csrf-token"]').attr('content');
 
 
-    document.getElementById('docenteform').addEventListener('submit', function (event) {
+    document.getElementById('usuarioform').addEventListener('submit', function (event) {
         event.preventDefault(); // Evita que el formulario se envíe normalmente
-        var form = document.getElementById('docenteform');
+        var form = document.getElementById('usuarioform');
+        $('.alert-danger').remove();
         $.ajax({
             type:'POST',
             // datatype: 'json',
@@ -58,10 +100,9 @@
             contentType: false,
             success: function(data) {
               form.reset();
-              $("#modaldocente").modal('hide');
+              $("#modalusuario").modal('hide');
               cargar_datatable();
               toastr.success(data.mensaje)
-              $('.alert-danger').remove();
             },
             error: function(xhr) {
               let res = xhr.responseJSON
@@ -78,41 +119,45 @@
 
     carga_inicial();
     function carga_inicial(){ 
-      $("#tabladocentes").DataTable({
+      $("#tablausuarios").DataTable({
         "responsive": true, "lengthChange": false, "autoWidth": false,
         "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-        }).buttons().container().appendTo('#tabladocentes_wrapper .col-md-6:eq(0)');
+        }).buttons().container().appendTo('#tablausuarios_wrapper .col-md-6:eq(0)');
       cargar_datatable();
     }
     function cargar_datatable(){
-      var table = $('#tabladocentes').DataTable();
+      var table = $('#tablausuarios').DataTable();
       table.clear();
       $.ajax({
           dataType:'json',
-          url: 'docentes-todos',
+          url: 'usuarios-todos',
           success: function(data) {
             let numero_orden = 1;
-              (data.docentes).forEach(function(repo) {
+              (data.usuarios).forEach(function(repo) {
                   table.row.add([
                   numero_orden,
-                  repo.persona.dni,
-                  repo.persona.nombres,
-                  repo.persona.apellidop + ' ' + repo.persona.apellidom,
-                  repo.persona.sexo,
-                  repo.tipocontrato,
-                  '<div class="btn-group" role="group" aria-label="Basic mixed styles example"><a id="'+repo.id+'" class="btn btn-danger btn_eliminar_docente mr-1"><i class="fa fa-trash" aria-hidden="true"></i></a><a id="'+repo.id+'" class="btn btn-warning btn_modificar_docente"><i class="fa fa-pencil" aria-hidden="true"></i></a></div>'
+                  repo.email,
+                  repo.persona.apellidop + ' ' + repo.persona.apellidom + ', ' + repo.persona.nombres,
+                  repo.role.nombre,
+                  repo.es_activo,
+                  '<div class="btn-group" role="group" aria-label="Basic mixed styles example">'+
+                    '<a id="'+repo.id+'" class="btn btn-danger btn_eliminar_usuario mr-1"><i class="fa fa-trash" aria-hidden="true"></i></a>'+
+                    '<a id="'+repo.id+'" class="btn btn-warning btn_modificar_usuario mr-1"><i class="fa fa-pencil" aria-hidden="true"></i></a>' +
+                    '<a id="'+repo.id+'" class="btn btn-primary btn_resetearclave" title="Resetear Clave"><i class="fas fa-sync-alt"></i></a>'+
+                  '</div>'
+                  
                 ]).draw();
                   numero_orden++;
               });
           }
       })
     }
-    $("#tabladocentes").on('click', '.btn_eliminar_docente', function() {            
-        var docente_id = $(this).attr('id');       
+    $("#tablausuarios").on('click', '.btn_eliminar_usuario', function() {            
+        var usuario_id = $(this).attr('id');       
         Swal.fire({
           icon: 'question',
-          title: 'Docente',
-          text: 'Esta Seguro de Eliminar el docente?',
+          title: 'Usuario',
+          text: 'Esta Seguro de Eliminar el usuario?',
           toast: true,
           position: 'center',
           showConfirmButton: true,
@@ -125,9 +170,9 @@
             $.ajax({
                 type:'POST',
                 dataType:'json',
-                url: 'docentes-eliminar',
+                url: 'usuarios-eliminar',
                 data: {
-                  id: docente_id,
+                  id: usuario_id,
                   _token: csrf_token
                 },
                 success: function(data) {
@@ -142,44 +187,83 @@
           }
         });
     });
+    $("#tablausuarios").on('click', '.btn_resetearclave', function() {    
+      var usuario_id = $(this).attr('id');         
+      Swal.fire({
+            icon: 'question',
+            title: 'USUARIOS',
+            text: 'Esta Seguro de Resetear al Usuario?',
+            toast: true,
+            position: 'center',
+            showConfirmButton: true,
+            confirmButtonText: 'Si',
+            showCancelButton: true,
+            cancelButtonText: 'No',
+            cancelButtonColor: '#bd2130'
+          }).then(respuesta=>{
+            if(respuesta.isConfirmed){
+              $.ajax({
+                  type:'POST',
+                  dataType:'json',
+                  url: 'usuario-resetear',
+                  data: {
+                    id: usuario_id,
+                    _token: csrf_token
+                  },
+                  success: function(data) {
+                    toastr.success(data.mensaje)
+                  },
+                  error: function(xhr) {
+                    let res = xhr.responseJSON
+                    if($.isEmptyObject(res) === false) {
+                        $.each(res.errors,function (key, value){
+                            $("input[name='"+key+"']").closest('.mb-3')
+                            .append('<div class="alert alert-outline-danger d-flex align-items-center p-0" role="alert"><span class="fas fa-times-circle text-danger fs-3 me-3"></span><p class="m-0 flex-1">'+ value+ '</p><button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button></div>')
+                            
+                        });
+                    }
+                }
+              });
+              
+            }
+          });
+    });  
 
-function limpiarformdocente(){
-  $('input[name=id]').val('');
+function limpiarformusuario(){
+  $('input[name=id]').val('');  
+  $('input[name=dni]').val('')
   $('input[name=nombres]').val('')
   $('input[name=apellidop]').val('')
-  $('input[name=apellidom]').val('')  
-  $('select[name=sexo]').val('M')
-  $('input[name=dni]').val('')
-  $('input[name=email]').val('')  
-  $('select[name=tipocontrato]').val('Contratado')  
+  $('input[name=apellidom]').val('')
+  $('input[name=email]').val('')
+  $('select[name=role_id]').val(1)  
 }
 
-$('#btn-nuevo-docente').click(function (){
-  limpiarformdocente();
+$('#btn-nuevo-usuario').click(function (){
+  limpiarformusuario();
   document.getElementById('grupocontrasenha').classList.remove('d-none');
-  $("#titulo-modal").text('Nuevo Docente');
-  $("#modaldocente").modal('show');
+  $("#titulo-modal").text('Nuevo Usuario');
+  $("#modalusuario").modal('show');
 });
 
-$("#tabladocentes").on('click', '.btn_modificar_docente', function() { 
+$("#tablausuarios").on('click', '.btn_modificar_usuario', function() { 
   $('.alert-danger').remove();
   $("#titulo-modal").text('Modificar Docente');
   document.getElementById('grupocontrasenha').classList.add('d-none');
-  var docente_id = $(this).attr('id'); 
+  var usuario_id = $(this).attr('id'); 
   $.ajax({
-    url: 'docente-obtener',
+    url: 'usuarios-obtener',
     method: 'GET', // o GET, PUT, DELETE, según tus necesidades
-    data: {id : docente_id},
+    data: {id : usuario_id},
     dataType: 'json', // o 'text', 'html', según el tipo de respuesta esperada
     success: function(respuesta) {
       $('input[name=id]').val(respuesta.id)
+      $('input[name=dni]').val(respuesta.persona.dni)
       $('input[name=nombres]').val(respuesta.persona.nombres)
       $('input[name=apellidop]').val(respuesta.persona.apellidop)
       $('input[name=apellidom]').val(respuesta.persona.apellidom)
-      $('select[name=sexo]').val(respuesta.persona.sexo)
-      $('input[name=email]').val(respuesta.persona.email)
-      $('input[name=dni]').val(respuesta.persona.dni)
-      $('select[name=tipocontrato]').val(respuesta.tipocontrato)
+      $('input[name=email]').val(respuesta.email)
+      $('select[name=role_id]').val(respuesta.role_id)
     },
     error: function(xhr, status, error) {
       var mensajeError = "Ocurrió un error en la solicitud AJAX.";
@@ -194,11 +278,10 @@ $("#tabladocentes").on('click', '.btn_modificar_docente', function() {
     console.log(mensajeDetallado);
     }
   })
-  $("#modaldocente").modal('show');
+  $("#modalusuario").modal('show');
 });
 </script>
 @endsection
-
 
 
 

@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('docentes', function (Blueprint $table) {
+        Schema::create('alumnos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('persona_id')->constrained('personas')->onDelete('cascade')->onUpdate('cascade');
-            $table->string('tipocontrato', 40);
+            $table->string('codigo');
+            $table->foreignId('grado_id')->constrained('grados')->onDelete('cascade')->onUpdate('cascade');
+            $table->tinyInteger('es_activo')->unsigned()->default(1);
+            $table->string('estadoPago')->default('PENDIENTE');
             $table->timestamps();
         });
     }
@@ -24,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('docentes');
+        Schema::dropIfExists('alumnos');
     }
 };
