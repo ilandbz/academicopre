@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Docente extends Model
+class Horario extends Model
 {
     use HasFactory;
-    protected $fillable = ['persona_id','tipocontrato'];
-    public function persona(): BelongsTo
+    protected $fillable=['curso_id', 'dia', 'horaingreso', 'horasalida', 'observacion'];
+    public function curso(): BelongsTo
     {
-        return $this->belongsTo(Persona::class, 'persona_id');
+        return $this->belongsTo(Curso::class, 'curso_id');
     }
 }

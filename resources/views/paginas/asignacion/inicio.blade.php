@@ -117,22 +117,7 @@
         });
     });
 
-    document.getElementById('nombre').addEventListener('click', function() {
-      const nombre = this.value.trim(); // Obtener el valor del campo de entrada "nombre" y eliminar espacios en blanco al inicio y al final
-      const codigoGenerado = generarCodigo(nombre); // Llamar a la función para generar el código
-      document.getElementById('codigo').value = codigoGenerado; // Establecer el valor del campo "codigo" con el código generado
-    });
-    function generarCodigo(nombre) {
-    let codigo = '';
-    const caracteresPermitidos = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-
-    for (let i = 0; i < 6; i++) {
-        const indice = Math.floor(Math.random() * caracteresPermitidos.length);
-        codigo += caracteresPermitidos[indice];
-    }
-
-    return codigo + nombre.substr(0, 3); // Concatenar los primeros 3 caracteres del nombre al código generado
-}
+    
     carga_inicial();
     function carga_inicial(){ 
       $("#tablacursos").DataTable({

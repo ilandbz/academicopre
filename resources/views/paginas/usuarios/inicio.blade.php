@@ -139,7 +139,9 @@
                   repo.email,
                   repo.persona.apellidop + ' ' + repo.persona.apellidom + ', ' + repo.persona.nombres,
                   repo.role.nombre,
-                  repo.es_activo,
+                  repo.es_activo==1 ? '<a id="'+repo.id+'" href="" class="actordes"><i class="nav-icon far fa-circle text-success"></i>&nbsp;'+
+                  '<label class="text-success">Activo</label></a>' : '<a id="'+repo.id+'" href="" class="actordes"><i class="nav-icon far fa-circle text-muted"></i>&nbsp;'+
+                  '<label class="text-muted">Inactivo</label></a>',
                   '<div class="btn-group" role="group" aria-label="Basic mixed styles example">'+
                     '<a id="'+repo.id+'" class="btn btn-danger btn_eliminar_usuario mr-1"><i class="fa fa-trash" aria-hidden="true"></i></a>'+
                     '<a id="'+repo.id+'" class="btn btn-warning btn_modificar_usuario mr-1"><i class="fa fa-pencil" aria-hidden="true"></i></a>' +
@@ -152,6 +154,26 @@
           }
       })
     }
+    $("#tablausuarios").on('click', '.actordes', function() {
+      var programa_id = $(this).attr('id');  
+      event.preventDefault();
+        $.ajax({
+            dataType:'json',
+            url: 'usuarios-cambiar-estado',
+            data: {
+                  id: programa_id,
+                  _token: csrf_token
+                },
+            success: function(data) {
+              cargar_datatable();
+              toastr.success(data.mensaje)
+            },
+            error: function(xhr) {
+
+
+            }
+        });
+    });
     $("#tablausuarios").on('click', '.btn_eliminar_usuario', function() {            
         var usuario_id = $(this).attr('id');       
         Swal.fire({

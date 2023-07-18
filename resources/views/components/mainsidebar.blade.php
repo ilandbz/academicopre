@@ -15,7 +15,7 @@
             <img src="imagenes/default.jpg" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-            <a href="#" class="d-block">{{Auth::user()->name}}</a>
+            <a href="#" class="d-block">{{Auth::user()->email}}</a>
         </div>
         </div>
         <!-- SidebarSearch Form -->

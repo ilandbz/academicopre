@@ -11,9 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('semestres', function (Blueprint $table) {
+        Schema::create('pagos', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre');
+            $table->foreignId('alumno_id')->constrained('alumnos')->onDelete('cascade')->onUpdate('cascade');
+            $table->decimal('monto',9,2);
+            $table->string('descripcion');
+            $table->string('estado')->default('PAGADO');
             $table->timestamps();
         });
     }
@@ -23,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('semestres');
+        Schema::dropIfExists('pagos');
     }
 };

@@ -11,9 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('semestres', function (Blueprint $table) {
+        Schema::create('programas', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
+            $table->foreignId('aula_id')->constrained('aulas')->onDelete('cascade')->onUpdate('cascade');
+            $table->integer('vacantes');
+            $table->foreignId('semestre_id')->constrained('semestres')->onDelete('cascade')->onUpdate('cascade');
+            $table->tinyInteger('es_activo')->unsigned()->default(1);
             $table->timestamps();
         });
     }
@@ -23,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('semestres');
+        Schema::dropIfExists('programas');
     }
 };

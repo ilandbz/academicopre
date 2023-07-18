@@ -19,7 +19,7 @@
   <div class="col-12">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Lista General de Cursos</h3>
+        <h3 class="card-title">Lista General de Aulas</h3>
       </div>
       <!-- /.card-header -->
       <div class="card-body">
@@ -45,7 +45,7 @@
               </div>
           </div>
         <br>
-        @include('paginas.cursos.tabla')
+        @include('paginas.aulas.tabla')
       </div>
       <!-- /.card-body -->
     </div>
@@ -54,7 +54,7 @@
 </div>
 <!-- /.row -->
 
-@include('paginas.cursos.modalcursos')
+@include('paginas.aulas.modalaula')
 @endsection
 
 @section('scripts')
@@ -87,9 +87,9 @@
   let csrf_token = $('meta[name="csrf-token"]').attr('content');
 
 
-    document.getElementById('cursoform').addEventListener('submit', function (event) {
+    document.getElementById('aulaform').addEventListener('submit', function (event) {
         event.preventDefault(); // Evita que el formulario se envíe normalmente
-        var form = document.getElementById('cursoform');
+        var form = document.getElementById('aulaform');
         $('.alert-danger').remove();
         $.ajax({
             type:'POST',
@@ -100,7 +100,7 @@
             contentType: false,
             success: function(data) {
               form.reset();
-              $("#modalprograma").modal('hide');
+              $("#modalaula").modal('hide');
               cargar_datatable();
               toastr.success(data.mensaje)
             },
@@ -117,63 +117,50 @@
         });
     });
 
-    document.getElementById('nombre').addEventListener('click', function() {
-      const nombre = this.value.trim(); // Obtener el valor del campo de entrada "nombre" y eliminar espacios en blanco al inicio y al final
-      const codigoGenerado = generarCodigo(nombre); // Llamar a la función para generar el código
-      document.getElementById('codigo').value = codigoGenerado; // Establecer el valor del campo "codigo" con el código generado
-    });
-    function generarCodigo(nombre) {
-    let codigo = '';
-    const caracteresPermitidos = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-
-    for (let i = 0; i < 6; i++) {
-        const indice = Math.floor(Math.random() * caracteresPermitidos.length);
-        codigo += caracteresPermitidos[indice];
-    }
-
-    return codigo + nombre.substr(0, 3); // Concatenar los primeros 3 caracteres del nombre al código generado
-}
+    
     carga_inicial();
     function carga_inicial(){ 
-      $("#tablacursos").DataTable({
+      $("#tablaaulas").DataTable({
         "responsive": true, "lengthChange": false, "autoWidth": false,
         "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-        }).buttons().container().appendTo('#tablacursos_wrapper .col-md-6:eq(0)');
+        }).buttons().container().appendTo('#tablaaulas_wrapper .col-md-6:eq(0)');
+      limpiarform();
       cargar_datatable();
     }
     function cargar_datatable(){
-      var table = $('#tablacursos').DataTable();
+      var table = $('#tablaaulas').DataTable();
       table.clear();
       $.ajax({
           dataType:'json',
-          url: 'cursos-todos',
+          url: 'aulas-todos',
           success: function(data) {
             let numero_orden = 1;
-              (data.cursos).forEach(function(repo) {
+              (data.aulas).forEach(function(repo) {
                   table.row.add([
                   numero_orden,
-                  repo.codigo,
                   repo.nombre,
-                  repo.credito,
-                  repo.estado,
-                  repo.tipo,
-                  repo.estadodocente,
+                  repo.piso,
+                  repo.numero,
+                  repo.aforo,
+                  repo.seccion,
+                  repo.status,
                   '<div class="btn-group" role="group" aria-label="Basic mixed styles example">'+
-                    '<a id="'+repo.id+'" class="btn btn-danger btn_eliminar_curso mr-1"><i class="fa fa-trash" aria-hidden="true"></i></a>'+
-                    '<a id="'+repo.id+'" class="btn btn-warning btn_modificar_curso mr-1"><i class="fa fa-pencil" aria-hidden="true"></i></a>' +
+                    '<a id="'+repo.id+'" class="btn btn-danger btn_eliminar_aula mr-1"><i class="fa fa-trash" aria-hidden="true"></i></a>'+
+                    '<a id="'+repo.id+'" class="btn btn-warning btn_modificar_aula mr-1"><i class="fa fa-pencil" aria-hidden="true"></i></a>' +
                   '</div>'
+                  
                 ]).draw();
                   numero_orden++;
               });
           }
       })
     }
-    $("#tablacursos").on('click', '.btn_eliminar_curso', function() {            
-        var programa_id = $(this).attr('id');       
+    $("#tablaaulas").on('click', '.btn_eliminar_aula', function() {            
+        var aula_id = $(this).attr('id');       
         Swal.fire({
           icon: 'question',
-          title: 'Cursos',
-          text: 'Esta Seguro de Eliminar el Curso?',
+          title: 'Aulas',
+          text: 'Esta Seguro de Eliminar el Aula?',
           toast: true,
           position: 'center',
           showConfirmButton: true,
@@ -186,9 +173,9 @@
             $.ajax({
                 type:'POST',
                 dataType:'json',
-                url: 'cursos-eliminar',
+                url: 'aulas-eliminar',
                 data: {
-                  id: programa_id,
+                  id: aula_id,
                   _token: csrf_token
                 },
                 success: function(data) {
@@ -206,39 +193,37 @@
 
 
 function limpiarform(){
-  $('input[name=id]').val(''); 
+  $('input[name=id]').val('');  
   $('input[name=nombre]').val('');  
-  $('input[name=credito]').val('');  
-  $('select[name=estado]').val('Libre');
-  $('select[name=tipo]').val('Semestral');
-  $('select[name=estadodocente]').val('PENDIENTE');
-  $('input[name=codigo]').val('');
+  $('input[name=piso]').val('');
+  $('input[name=aforo]').val('');
+  $('input[name=seccion]').val('');
 
 }
 
 $('#btn-nuevo-usuario').click(function (){
   limpiarform();
-  $("#titulo-modal").text('Nuevo Programa');
-  $("#modalprograma").modal('show');
+  $("#titulo-modal").text('Nuevo Aula');
+  $("#modalaula").modal('show');
 });
 
-$("#tablacursos").on('click', '.btn_modificar_curso', function() { 
+$("#tablaaulas").on('click', '.btn_modificar_aula', function() { 
   $('.alert-danger').remove();
-  $("#titulo-modal").text('Modificar Programa');
-  var programa_id = $(this).attr('id'); 
+  $("#titulo-modal").text('Modificar Aula');
+  var aula_id = $(this).attr('id'); 
   $.ajax({
-    url: 'curso-obtener',
+    url: 'aula-obtener',
     method: 'GET', // o GET, PUT, DELETE, según tus necesidades
-    data: {id : programa_id},
+    data: {id : aula_id},
     dataType: 'json', // o 'text', 'html', según el tipo de respuesta esperada
     success: function(respuesta) {
       $('input[name=id]').val(respuesta.id)
       $('input[name=nombre]').val(respuesta.nombre)
-      $('input[name=credito]').val(respuesta.credito)
-      $('select[name=estado]').val(respuesta.estado)
-      $('select[name=tipo]').val(respuesta.tipo)
-      $('select[name=estadodocente]').val(respuesta.estadodocente)
-      $('input[name=codigo]').val(respuesta.codigo)
+      $('input[name=numero]').val(respuesta.numero)
+      $('input[name=piso]').val(respuesta.piso)
+      $('input[name=aforo]').val(respuesta.aforo)
+      $('input[name=seccion]').val(respuesta.seccion)
+      $('select[name=status]').val(respuesta.status)
     },
     error: function(xhr, status, error) {
       var mensajeError = "Ocurrió un error en la solicitud AJAX.";
@@ -253,7 +238,7 @@ $("#tablacursos").on('click', '.btn_modificar_curso', function() {
     console.log(mensajeDetallado);
     }
   })
-  $("#modalprograma").modal('show');
+  $("#modalaula").modal('show');
 });
 </script>
 @endsection

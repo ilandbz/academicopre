@@ -140,7 +140,17 @@ class UsuarioController extends Controller
         $usuario = User::with(['persona:id,dni,apellidop,apellidom,nombres', 'role:id,nombre'])->where('id',$request->id)->first();
         return response()->json($usuario, 200);
     }
+    public function cambiarestado(Request $request){
+        $usuario = User::where('id', $request->id)->first();
 
+        $usuario->es_activo = ($usuario->es_activo == 1) ? 0 : 1;
+        
+        $usuario->save();
+        return response()->json([
+            'ok' => 1,
+            'mensaje' => 'Cambiado de Estado'
+        ],200);
+    }
     /**
      * Display the specified resource.
      */

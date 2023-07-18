@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('grados', function (Blueprint $table) {
+        Schema::create('alumnos', function (Blueprint $table) {
             $table->id();
-            $table->string('gradonombre');
+            $table->string('codigo');
+            $table->foreignId('persona_id')->constrained('personas')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('programa_id')->constrained('programas')->onDelete('cascade')->onUpdate('cascade');
             $table->tinyInteger('es_activo')->unsigned()->default(1);
-            $table->foreignId('aula_id')->constrained('aulas')->onDelete('cascade')->onUpdate('cascade');
-            $table->integer('cantidadalumnos');
-            $table->foreignId('semestre_id')->constrained('semestres')->onDelete('cascade')->onUpdate('cascade');
+            $table->string('estado')->default('PENDIENTE');
+            $table->string('estadoPago')->default('PENDIENTE');
             $table->timestamps();
         });
     }
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('grados');
+        Schema::dropIfExists('alumnos');
     }
 };

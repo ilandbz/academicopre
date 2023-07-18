@@ -130,7 +130,7 @@
     
           <li class="nav-item dropdown">
             <a class="nav-link" data-toggle="dropdown" href="#">
-                <img src="imagenes/default.jpg"  class="img-circle img-sm mr-1"/>{{Auth::user()->name}}
+                <img src="imagenes/default.jpg"  class="img-circle img-sm mr-1"/>{{Auth::user()->email}}
             </a>
             <div class="dropdown-menu dropdown-menu-right">
                 <!-- <span class="dropdown-item dropdown-header">15 Notifications</span> -->

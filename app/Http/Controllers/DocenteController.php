@@ -22,9 +22,7 @@ class DocenteController extends Controller
     }
     public function cargarvistatabla(){
         $data['docentes'] = Docente::get();
-    
         $html = view('paginas.docentes.vistatabla', $data)->render();
-        
         return response()->json([
             'vista' => $html
         ], 200);
@@ -57,7 +55,7 @@ class DocenteController extends Controller
                 'apellidom' => 'required',
                 'dni'       => 'required|numeric|digits:8|unique:personas,dni',
                 'email'     => 'required|email|unique:personas,email',
-                'password'  => 'required',
+                'password'              => 'required',
                 'password_confirmation' => 'required|same:password'
             ], [
                 'nombres.required'   => 'El campo nombres es obligatorio.',
@@ -127,7 +125,6 @@ class DocenteController extends Controller
             $docente->tipocontrato = $request->tipocontrato;
             $docente->save();
 
-
             $persona = Persona::where('id', $docente->persona_id)->update([
                 'dni'               => $request->dni,
                 'nombres'           => $request->nombres,
@@ -135,7 +132,6 @@ class DocenteController extends Controller
                 'apellidom'         => $request->apellidom,
                 'email'             => $request->email,
             ]);
-
 
             return response()->json([
                 'ok' => 1,
@@ -147,9 +143,8 @@ class DocenteController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
-        //
+    public function show(Request $request){
+
     }
 
     /**
